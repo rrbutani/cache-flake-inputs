@@ -1,19 +1,20 @@
+attrs@
 { inputs
 , lockFile
 , knownCachedNarHashes
 , extraAttrsOnInputDrvs ? (lockNode: {})
-, useRemoteCache ? false
+, useSubstituters ? false
 
 # Either provide `nixpkgs` or provide the rest of these.
 , nixpkgs ? null
 , stdenvNoCC ? nixpkgs.stdenvNoCC
-, coreutils ? nixpkgs.coreutils
 , writeScript ? nixpkgs.writeScript
 , lib ? nixpkgs.lib
 , nix ? nixpkgs.nix
+, system ? stdenvNoCC.buildPlatform.system
 }:
 let
-  lockFile = builtins.fromJSON (builtins.readFile lockFile);
+  lockFile = builtins.fromJSON (builtins.readFile attrs.lockFile);
 
   # Introduce a level of indirection.
   #
@@ -23,15 +24,21 @@ let
   #
   # Because this is a fixed-output derivation and not an input addressed
   # derivation, both will ultimately yield the same downstream artifacts.
-  #
-  # NOTE: the names influence the fixed output derivation's store path so
   # they must match.
 
-  # Creates a fixed-output version of the flake input (src).
-  mkFixedOutputCopy = attrs@{ name, src, hash, ... }: stdenvNoCC.mkDerivation ({
-    inherit name;
-    builder = writeScript "copy" ''
-      ${coreutils}/bin/cp -pR ${src} $out
+  # Creates a fixed-output clone of the flake input (src).
+  #
+  # This derivation *should* have the same output path as the flake input
+  # and should never actually be built. By referencing `src` it should
+  # cause it to be fetched, removing the need for this derivation to be
+  # built.
+  mkFixedOutputCopy = attrs@{ src, hash, ... }: stdenvNoCC.mkDerivation ({
+    name = "source"; # Always set to "source" to match how flake inputs work.
+    inherit src;
+    builder = ''
+      echo "The flake input at $src should have the same output path as this derivation!"
+
+      exit 1
     '';
 
     outputHashMode = "recursive";
@@ -44,7 +51,8 @@ let
   # Assumes the flake input is already in the store (or in a substitute)
   # and creates a derivation that assumes it will not actually be built.
   useExistingFixedOutputDrv = attrs@{ name, hash, ... }: stdenvNoCC.mkDerivation ({
-    inherit name;
+    name = "source"; # Always set to "source" to match how flake inputs work.
+
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
     outputHash = hash;
@@ -77,7 +85,7 @@ let
           outputHashMode = "recursive";
           outputHashAlgo = "sha256";
           outputHash = "${hash}";
-          system = "${sys}";
+          system = "${system}";
           builder = "error";
         }
         EOF
@@ -112,13 +120,15 @@ let
     '' false;
     knownCacheHit = (knownCachedNarHashes.${name} or {}).${hash} or warning;
   in
+    # NOTE: if it's present locally, using either derivation should be
+    # equivalent; nothing should build either way.
     if usingRemoteCaches then knownCacheHit || presentLocally.present
     else presentLocally.present;
 
   facade = name: let
     lockNode = lockFile.nodes.${name};
 
-    hash' = lockNode.lockNode.narHash;
+    hash' = lockNode.locked.narHash;
     hash =
       assert (builtins.head (builtins.split "-" hash')) == "sha256"; hash';
 
