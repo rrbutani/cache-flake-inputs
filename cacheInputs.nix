@@ -21,7 +21,7 @@ let
   #
   # This can be either a copy of the flake input or a `requireFile`-esque
   # derivation that makes reference to a derivation already in the
-  # store/remote cache.
+  # store/substituter.
   #
   # Because this is a fixed-output derivation and not an input addressed
   # derivation, both will ultimately yield the same downstream artifacts.

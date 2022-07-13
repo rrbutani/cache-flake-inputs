@@ -3,12 +3,14 @@
 Premise:
   - You have a large or otherwise inconvenient-to-fetch (i.e. requires auth) **non-flake** flake input.
   - You cannot switch to using a fetcher to grab this input instead for Reasons (i.e. requires auth).
-  - You provide a remote cache for users of your flake that contains binaries for all of your flake outputs.
-  - You would like for users of your flake to not need to fetch your large flake input themselves and to instead just fetch artifacts from your remote cache.
+  - You provide a substituter for users of your flake that contains binaries for all of your flake outputs.
+  - You would like for users of your flake to not need to fetch your large flake input themselves and to instead just fetch artifacts from your substituter.
 
 The problem:
   - Flake inputs [*are* fetched lazily](https://github.com/NixOS/nix/commit/6dbd5c26e6c853f302cd9d3ed171d134ff24ffe1) (once locking has happened)
   - But: in order to actually produce the derivation (which is then substituted and *not* built locally) for any of this flake's outputs, we need to, at eval time, reference our flake's inputs. The moment we do this, the flake input is fetched, even though we may never actually use the contents of the flake's nix store path.
+
+> NOTE: users that already have your substituter added (not as an `extra-substituter` in a flake but on the command-line or in `nix.conf`) appear to use the substituter to fetch flake inputs, when possible. However, these inputs will still be fetched "eagerly" (at eval time).
 
 Eventually we can maybe use [`fetch-closure` (experimental)](https://nixos.org/manual/nix/stable/expressions/builtins.html#builtins-fetchClosure) for this use case but in the meantime...
 
@@ -20,7 +22,7 @@ flake).
 ```nix
 {
   nixConfig = {
-    # A remote cache that you provide.
+    # A substituter that you provide.
     extra-substituters = [
       "https://rrbutani.cachix.org"
     ];
