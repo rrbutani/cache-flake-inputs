@@ -56,7 +56,7 @@ flake).
       lockFile = ./flake.lock;
 
       # This tells `cfi` to assume that we can indeed use substituters to get the
-      # things `knonCachedNarHashes` says we can.
+      # things `knownCachedNarHashes` says we can.
       #
       # If this is set to `false`, `cfi` will effectively do nothing; derivations
       # in `inputs'` will be equivalent to the ones in `inputs` and flake inputs
