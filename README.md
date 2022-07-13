@@ -43,7 +43,8 @@ flake).
     cfi = {
       url = github:rrbutani/cache-flake-inputs;
 
-      # You can set this to `false` to disable `cacheInputs`.
+      # You can set `cfi-override.url` (above) to `github:boolean-option/false`
+      # to disable `cacheInputs`.
       #
       # This is useful for changing the behavior of your _transitive_ flake dependencies.
       inputs.cache-flake-inputs-global-override.follows = "cfi-override";
