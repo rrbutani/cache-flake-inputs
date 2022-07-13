@@ -64,7 +64,7 @@ let
       echo "Have you accepted this flake's `extra-substituters`?"
       echo "Are you in `trusted-users` in `/etc/nix/nix.conf` if you're running a multi-user setup?"
       echo ""
-      echo "If you are not using this flake's caches, please set `useRemoteCache` to `false`."
+      echo "If you are not using this flake's caches, please set `useSubstituters` to `false`."
 
       exit 1
     '';
@@ -104,8 +104,6 @@ let
   # Checks if the input is either already present locally or known to be
   # present in the substituters bundled with this flake.
   checkForFixedOutputDrv = args@{ name, hash }: let
-    usingRemoteCaches = true;
-
     presentLocally = checkForFixedOutputDrvLocally args;
     warning = lib.trivial.warn ''
 
@@ -122,7 +120,7 @@ let
   in
     # NOTE: if it's present locally, using either derivation should be
     # equivalent; nothing should build either way.
-    if usingRemoteCaches then knownCacheHit || presentLocally.present
+    if useSubstituters then knownCacheHit || presentLocally.present
     else presentLocally.present;
 
   facade = name: let
