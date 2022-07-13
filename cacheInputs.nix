@@ -92,9 +92,10 @@ let
         EOF
 
         outPath=$(nix eval --extra-experimental-features nix-command --expr "(import ./.).outPath" --impure)
+        echo ${hash} >&2
         echo $outPath >&2
 
-        nix-build && res=true || res=false
+        nix-build -vvvvv --no-substitute && res=true || res=false
 
         echo "{ path = $outPath; present = $res; }" > $out
       '';
