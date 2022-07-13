@@ -1,4 +1,6 @@
 {
+  description = "Explicit substitution for non-flake flake inputs.";
+
   inputs.nixpkgs.url = github:nixOS/nixpkgs/22.05;
   inputs.flu.url = github:numtide/flake-utils;
 
