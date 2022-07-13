@@ -90,7 +90,7 @@ let
         }
         EOF
 
-        outPath=$(nix eval --expr "(import ./.).outPath" --impure)
+        outPath=$(nix eval --extra-experimental-features nix-command --expr "(import ./.).outPath" --impure)
         echo $outPath >&2
 
         nix-build && res=true || res=false
