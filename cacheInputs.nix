@@ -1,3 +1,4 @@
+globalOverride:
 attrs@
 { inputs
 , lockFile
@@ -120,7 +121,8 @@ let
   in
     # NOTE: if it's present locally, using either derivation should be
     # equivalent; nothing should build either way.
-    if useSubstituters then knownCacheHit || presentLocally.present
+    if (globalOverride && useSubstituters) then
+      knownCacheHit || presentLocally.present
     else presentLocally.present;
 
   facade = name: let
