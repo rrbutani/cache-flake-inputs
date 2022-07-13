@@ -1,13 +1,12 @@
 {
   "nodes": {
     "cache-flake-inputs-global-override": {
-      "flake": false,
       "locked": {
-        "lastModified": 1657737958,
-        "narHash": "sha256-LMKe4iVFcswPWefyNdBL2E7JbIrYlwnKzuYALTToJxk=",
+        "lastModified": 1657739253,
+        "narHash": "sha256-L9eyTL7njtPBUYmZRYFKCzQFDgua9U9oE7UwCzjZfl8=",
         "owner": "boolean-option",
         "repo": "true",
-        "rev": "d73def4e1988921055bc689912f7a8a3849c1029",
+        "rev": "6ecb49143ca31b140a5273f1575746ba93c3f698",
         "type": "github"
       },
       "original": {

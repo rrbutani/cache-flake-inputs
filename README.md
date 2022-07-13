@@ -38,7 +38,16 @@ flake).
 
     flu.url = github:numtide/flake-utils;
     nixpkgs.url = github:nixOS/nixpkgs/22.05;
-    cfi.url = github:rrbutani/cache-flake-inputs;
+
+    cfi-override.url = github:boolean-option/true;
+    cfi = {
+      url = github:rrbutani/cache-flake-inputs;
+
+      # You can set this to `false` to disable `cacheInputs`.
+      #
+      # This is useful for changing the behavior of your _transitive_ flake dependencies.
+      inputs.cache-flake-inputs-global-override.follows = "cfi-override";
+    };
   };
 
   outputs = inputs@{ flu, cfi, nixpkgs, ... }: with flu.lib; eachDefaultSystem (sys: let
