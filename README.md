@@ -14,8 +14,7 @@ The problem:
 
 Eventually we can maybe use [`fetch-closure` (experimental)](https://nixos.org/manual/nix/stable/expressions/builtins.html#builtins-fetchClosure) for this use case but in the meantime...
 
-This flake provides an expression that conditionally replaces flake inputs with fixed output derivations that are assumed to be accessible to the user of the flake (i.e. because they are in a substituter that comes with the
-flake).
+This flake provides an expression that conditionally replaces flake inputs with fixed output derivations that are assumed to be accessible to the user of the flake (i.e. because they are in a substituter that comes with the flake).
 
 ## example
 
@@ -48,7 +47,11 @@ flake).
       # You can set `cfi-override.url` (above) to `github:boolean-option/false`
       # to disable `cacheInputs`.
       #
-      # This is useful for changing the behavior of your _transitive_ flake dependencies.
+      # This is useful for changing the behavior of your flake dependencies.
+      #
+      # For example, rdeps of this flake can set `inputs.cfi-override.follows`
+      # on this flake to an input pointing to `github:boolean-option/false` to
+      # override our default.
       inputs.cache-flake-inputs-global-override.follows = "cfi-override";
     };
   };
