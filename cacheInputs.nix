@@ -63,10 +63,10 @@ let
     builder = writeScript "error" ''
       echo "This derivation (for ${name}) should always be substituted!"
       echo ""
-      echo "Have you accepted this flake's `extra-substituters`?"
-      echo "Are you in `trusted-users` in `/etc/nix/nix.conf` if you're running a multi-user setup?"
+      echo "Have you accepted this flake's \`extra-substituters\`?"
+      echo "Are you in \`trusted-users\` in \`/etc/nix/nix.conf\` if you're running a multi-user setup?"
       echo ""
-      echo "If you are not using this flake's caches, please set `useSubstituters` to `false`."
+      echo "If you are not using this flake's caches, please set \`useSubstituters\` to \`false\`."
 
       exit 1
     '';
@@ -119,8 +119,8 @@ let
       Entry for flake input `${name}` with hash `${hash}`
       is not present in the list of known cached flake inputs.
 
-      Consider uploading path `${presentLocally.path}` to your caches
-      and adding the hash above to the list to allow users of this flake to skip fetching
+      Consider uploading path `${presentLocally.path}` to your caches and adding
+      the hash above to the list to allow users of this flake to skip fetching
       flake input `${name}` directly.
 
     '' false;
