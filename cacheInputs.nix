@@ -5,6 +5,7 @@ attrs@
 , knownCachedNarHashes
 , extraAttrsOnInputDrvs ? (lockNode: {})
 , useSubstituters ? false
+, recursiveNixAllowed ? false
 
 # Either provide `nixpkgs` or provide the rest of these.
 , nixpkgs ? null
@@ -74,6 +75,9 @@ let
   ));
 
   # Checks if the flake input is already present locally.
+  #
+  # TODO: this seems to trigger errors on machines that have the sandbox
+  # enabled; cannot access `/nix/var`.
   checkForFixedOutputDrvLocally = { name, hash }: let
     chk = stdenvNoCC.mkDerivation {
       name = name + "-chk";
@@ -106,7 +110,9 @@ let
   # Checks if the input is either already present locally or known to be
   # present in the substituters bundled with this flake.
   checkForFixedOutputDrv = args@{ name, hash }: let
-    presentLocally = checkForFixedOutputDrvLocally args;
+    presentLocally = if recursiveNixAllowed then
+      checkForFixedOutputDrvLocally args
+    else { present = false; path = "unknown"; };
     warning = lib.trivial.warn ''
 
 
